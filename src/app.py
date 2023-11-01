@@ -4,30 +4,49 @@ from back import *
 
 app = Flask(__name__)
 cors = CORS(app)
-# Gestion de la route POST pour recevoir la question du frontend
+
+# Definition of the API returning GPT answer to an obstetric related question
 @app.route('/api/query', methods=['POST'])
 def receive_question():
     try:
+        # Recovering of the question data from front
         data = request.get_json()
         question = data.get('query')
-        print("query : ", question)
+        if len(question)==0:
+            question.append(" ") 
+        print("question:", question)
+
+        # Recovering the embeddings
         df_embeddings=pd.read_csv('src/embeddings.csv', index_col=0)
-        print(df_embeddings['embeddings'][1])
+        #print(df_embeddings["embeddings"].head())
         df_embeddings['embeddings'] = df_embeddings['embeddings'].apply(eval).apply(np.array)
-
-        answer =  generate_answer(question,df_embeddings, deployment=deployment_name)
-
-        # Vous pouvez traiter la question ici, par exemple, renvoyer une réponse.
-        # Pour cet exemple, nous allons simplement renvoyer un message de confirmation.
+        # Generation of the answer
+        (answer, sources) =  generate_answer(question,df_embeddings, deployment=deployment_name)
+        sources_to_print = {}
+        for src in sources:
+            if src[0] in sources_to_print:
+                sources_to_print[src[0]].append(src[1])
+            else:
+                sources_to_print[src[0]] = [src[1]]
+                
+            
+        for key,val in sources_to_print.items():
+            print(key, val)
+# Example of question: What is oxytocin and what is it purpose in obstetric?
+        # print(answer,set(sources))
+        # Creation of the json answer
+        if "I don\'t know" in answer:
+            sources_to_print={}
         response = {
-            'message': f"Vous avez posé la question : '{question}'",
-            'answer': f"Voici la réponse à votre question : {answer}",
+            'message': f"{question}",
+            'answer': f"{answer}",
+            'sources':f"{json.dumps(sources_to_print)}",
         }
-        # Envoyer une réponse JSON au frontend
+        
         return jsonify({'message': response})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=3001)  # Vous pouvez utiliser un autre port si nécessaire
+    app.run(port=3001, debug=True) 
