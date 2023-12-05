@@ -25,11 +25,12 @@ def receive_question():
         sources_to_print = {}
         for src in sources:
             if src[0] in sources_to_print:
-                sources_to_print[src[0]].append(src[1])
+                sources_to_print[src[0]].append(src[1]+1)
             else:
-                sources_to_print[src[0]] = [src[1]]
+                sources_to_print[src[0]] = [src[1]+1]
                 
-            
+        print(sources_to_print)  
+        
         for key,val in sources_to_print.items():
             print(key, val)
 # Example of question: What is oxytocin and what is it purpose in obstetric?

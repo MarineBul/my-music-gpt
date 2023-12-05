@@ -1,70 +1,60 @@
-# Getting Started with Create React App
+# Music therapy chatbot
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Marine Buliard - 202326681 - Last updated 04/12/2023
 
-## Available Scripts
+## Description
 
-In the project directory, you can run:
+This project is a chatbot specialized in music therapy for newborn babies, developped as part of a master thesis at Los Andes university, Columbia.
 
-### `npm start`
+## How to use it?
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+To launch the project, ensure you have Node.js and Python installed on your computer.
+You will also need the Flask python module, openai, pandas, matplotlib, plotly, scipy, sklearn and the mui material library.
+Finally, you will need to have **your OpenAI key set as an environement variable** named OpenAIKey.
 
-### `npm test`
+* To install the Flask module run:
+pip install Flask
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* To install the openai library run:
+pip install openai
 
-### `npm run build`
+* To install the pandas library run:
+pip install pandas
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* To install the matplotlib library run:
+pip install matplotlib
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* To install the plotly library run:
+pip install plotly
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* To install the scipy library run:
+pip install scipy
 
-### `npm run eject`
+* To install the sklearn library run:
+pip install sklearn
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* To install the mui material library run:
+npm install @mui/material
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Launch the project
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To launch the frontend, open a powershell terminal in the APP/front folder, and run the following command:
+    npm start
+A new window will be opened automatically in your default browser
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+To launch the backend, open a python terminal in the APP folder and run:
+    python3 front/src/app.py
 
-## Learn More
+### Use the project
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Once the project is launched, you can type in any questionin the search bar. However, if this question is not related to music therapy or if the information is not available from the database created for the project, the model will answer the question with "I don't know".
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Here are a few examples of questions that should generate an answer:
+*What is the ideal duration for a music therapy session?*
+*How can music therapy be useful to newborn babies?*
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+On the other hand, the following examples might generate a simple "I don't know":
+*What is the recipe for tiramisu?* (too far from the subject)
+*What is the ideal artist for a 15-minute-long music therapy session for a 4-month old with a conjonctivitis?* (too precise, the database will not have a clear answer)
