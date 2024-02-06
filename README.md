@@ -1,6 +1,6 @@
 # Music therapy chatbot
 
-Marine Buliard - 202326681 - Last updated 04/12/2023
+Marine Buliard - 202326681 - Last updated 4/12/2023
 
 ## Description
 
@@ -11,14 +11,15 @@ This project is a chatbot specialized in music therapy for newborn babies, devel
 ### Install
 
 To launch the project, ensure you have Node.js and Python installed on your computer.
-You will also need the Flask python module, openai, pandas, matplotlib, plotly, scipy, sklearn and the mui material library.
+You will also need the Flask python module, openai (version 0.28.1), pandas, matplotlib, plotly, scipy, sklearn and the mui material library.
 Finally, you will need to have **your OpenAI key set as an environement variable** named OpenAIKey.
 
 * To install the Flask module run:
 pip install Flask
 
 * To install the openai library run:
-pip install openai
+pip install openai==0.28.1
+Please note that if you install a lastest version, the code might not work since we are using a now deleted library
 
 * To install the pandas library run:
 pip install pandas
@@ -44,8 +45,8 @@ To launch the frontend, open a powershell terminal in the APP/front folder, and 
     npm start
 A new window will be opened automatically in your default browser
 
-To launch the backend, open a python terminal in the APP folder and run:
-    python3 front/src/app.py
+To launch the backend, open a python terminal in the src folder and run:
+    python3 app.py
 
 ### Use the project
 
