@@ -13,20 +13,10 @@ openai.api_type = 'azure'
 openai.api_version = '2023-05-15'
 
 deployment_name='gpt-35-turbo-rfmanrique'
-print(os.getcwd())
-chroma_client = chromadb.Client()
-collection = chroma_client.create_collection(name="collection_test")
 
-embedding_path = os.path.abspath('src/embeddings_complete.csv')
-df=pd.read_csv(embedding_path, index_col=0)
-df['embeddings'] = df['embeddings'].apply(eval).apply(np.array)
-
-collection.add(
-            embeddings=[arr.tolist() for arr in df['embeddings'].to_list()],
-            documents= df['text'].to_list(),
-            metadatas = df.apply(lambda row: {"title": row['title'], "page": str(row['page_number']), "tokens": str(row['n_tokens'])}, axis=1).tolist(),
-            ids=[str(i) for i in range(len(df))]
-        )
+path = "C:/Users/Marine/Documents/CO_uniandes/0_Tesis/my-music-gpt/src"
+chroma_client = chromadb.PersistentClient(path)
+collection = chroma_client.get_collection("test_persist")
 
 def create_context(question, df, max_len=1800, size="ada"):
     
