@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useRef, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import "./App.css";
 import "./app.py";
@@ -9,6 +9,8 @@ function App() {
   const [query, setQuery] = useState([])
   const [answer, setAnswer] = useState("")
   const [sources, setSources] = useState([])
+  const [chatHistory, setChatHistory] = useState([])
+  const chatHistoryRef = useRef(null);
   
   const inputHandler = (e) => {
     const userInput = e.target.value;
@@ -42,7 +44,11 @@ function App() {
         console.log("answer", data.message.answer);
         console.log("sources array", data.message.sources);
         setAnswer(data.message.answer);
-        setSources(JSON.parse(data.message.sources));
+        //setSources(JSON.parse(data.message.sources));
+        setChatHistory(prevHistory => [
+          ...prevHistory,
+          { query: query, answer: data.message.answer, sources: data.message.sources }
+        ]);
       })
       .catch(error => {
         console.error('Error while sending the request to the backend: ', error);
@@ -51,11 +57,78 @@ function App() {
 
   };
   console.log(sources);
+  console.log("chat history", chatHistory)
+
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const response = await fetch('History.json');
+        const data = await response.json();
+        setChatHistory(data);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+
+    fetchChatHistory();
+  }, []);   
+  console.log("chatHistory", chatHistory);
 
   // Front
   return (
     <div className="main">
       <h1>Music GPT</h1>
+      {chatHistory && (
+      <div className="history-panel">
+        <div className="history-scroll"  ref={chatHistoryRef}>
+          <ul>
+            {chatHistory.map((item, index) => (
+              <li key={index}>
+                <p><strong>Query:</strong> {item.query}</p>
+                <p><strong>Answer:</strong> {item.answer}</p>
+                  <div><strong>Sources:</strong> 
+                  {Object.entries(item.sources).length > 0 ? (
+                    <ul> 
+                      {Object.entries(item.sources).map(([source, ids], sourceIndex) => (
+                        <li key={sourceIndex}>
+                          <a href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${ids[0][0]}`} target = "_blank" rel="noreferrer"><strong>{source}:</strong></a>
+                          <ul>
+                            {ids.map((id, subIndex) => (
+                              <li key={subIndex}>
+                                p: {Array.isArray(id) ? (
+                                  <span>
+                                  {id.map((subId, nestedIndex) => (
+                                    <a key={nestedIndex} href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${subId}`} target = "_blank" rel="noreferrer">
+                                      {nestedIndex > 0 && ', '}
+                                      {subId}
+                                    </a>
+                                  ))}
+                                </span>
+                                ) : (
+                                  id
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No sources available</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>)}
       <div className="search">
         <TextField
           id="outlined-basic"
@@ -67,28 +140,6 @@ function App() {
         />
       <button className="search-button" onClick={handleSubmit}>Submit</button>
       </div>
-      {answer && (
-      <div className="answer-container">
-      <p className="answer-text">{answer}</p>
-      </div>
-      )}
-      <h2>Sources:</h2>
-      {Object.keys(sources).length > 0 ? (
-        <ul>
-          {Object.keys(sources).map((key, index) => (
-            <li key={index}>
-              <strong>{key}:</strong> 
-              <ul>
-                {sources[key].map((item, subIndex) => (
-                  <li key={subIndex}>p: {item}</li>
-          ))}
-        </ul>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No sources available</p>
-      )}
     </div>
   );
 }
