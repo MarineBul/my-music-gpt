@@ -9,7 +9,9 @@ function App() {
   const [query, setQuery] = useState([])
   const [answer, setAnswer] = useState("")
   const [sources, setSources] = useState([])
-  const [chatHistory, setChatHistory] = useState([])
+  const [chatHistory, setChatHistory] = useState([[]])
+  const [currentChatHistory, setCurrentChatHistory] = useState([])
+  const [loading, setLoading] = useState(true)
   const chatHistoryRef = useRef(null);
   
   const inputHandler = (e) => {
@@ -28,6 +30,7 @@ function App() {
   const handleSubmit = () => {
     const jsonData = {
       query: query,
+      history: currentChatHistory,
     };
   
     fetch('http://localhost:3001/api/query', {
@@ -45,19 +48,64 @@ function App() {
         console.log("sources array", data.message.sources);
         setAnswer(data.message.answer);
         //setSources(JSON.parse(data.message.sources));
-        setChatHistory(prevHistory => [
+        // Update the current chat history so that it includes the answer to the new question
+        setCurrentChatHistory(prevHistory => [
           ...prevHistory,
           { query: query, answer: data.message.answer, sources: data.message.sources }
         ]);
+        console.log("lengthes", currentChatHistory.length, chatHistory.length)
+        // Update  the global chat history to avoid incoherences
+        if (currentChatHistory.length==0){
+          console.log('current chat', currentChatHistory);
+          setChatHistory([...chatHistory, [{ query: query, answer: data.message.answer, sources: data.message.sources }]]);
+        }else{
+          const updatedHistory = chatHistory.map((row, rowIndex) =>{
+            if (chatHistory[rowIndex].every(item => currentChatHistory.includes(item))){
+              return [...currentChatHistory, { query: query, answer: data.message.answer, sources: data.message.sources }];
+            }
+            // No need to say else, because if we entered the if loop then subsequent line not executed
+            return row;
+          });
+          setChatHistory(updatedHistory);
+        }
       })
       .catch(error => {
         console.error('Error while sending the request to the backend: ', error);
       });
       console.log(jsonData);
-
+      console.log("chat history", chatHistory);
   };
-  console.log(sources);
-  console.log("chat history", chatHistory)
+
+
+  const handleChangeHistory = (item) =>{
+    console.log("the new current history", item)
+    setCurrentChatHistory(item)
+  };
+
+  const handleNewChat = () => {
+    setCurrentChatHistory([]);
+    console.log("chat history", chatHistory);
+  };
+
+  const handleSaveHistory = () =>{
+    const jsonData = {
+      history: chatHistory,
+    };
+    fetch('http://localhost:3001/api/save', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data.message)
+    })
+    .catch(error => {
+      console.error('Error while sending the request to the backend: ', error);
+    });
+  };
 
   useEffect(() => {
     if (chatHistoryRef.current) {
@@ -71,8 +119,12 @@ function App() {
         const response = await fetch('History.json');
         const data = await response.json();
         setChatHistory(data);
+        setCurrentChatHistory(data[data.length - 1])
       } catch (error) {
         console.error('Error fetching chat history:', error);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -80,56 +132,74 @@ function App() {
   }, []);   
   console.log("chatHistory", chatHistory);
 
+  if (loading){
+    return <div>Loading...</div>
+  }
   // Front
   return (
     <div className="main">
       <h1>Music GPT</h1>
+      <button className="search-button" onClick={handleSaveHistory}>Save history</button>
       {chatHistory && (
-      <div className="history-panel">
-        <div className="history-scroll"  ref={chatHistoryRef}>
-          <ul>
-            {chatHistory.map((item, index) => (
-              <li key={index}>
-                <p><strong>Query:</strong> {item.query}</p>
-                <p><strong>Answer:</strong> {item.answer}</p>
-                  <div><strong>Sources:</strong> 
-                  {Object.entries(item.sources).length > 0 ? (
-                    <ul> 
-                      {Object.entries(item.sources).map(([source, ids], sourceIndex) => (
-                        <li key={sourceIndex}>
-                          <a href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${ids[0][0]}`} target = "_blank" rel="noreferrer"><strong>{source}:</strong></a>
-                          <ul>
-                            {ids.map((id, subIndex) => (
-                              <li key={subIndex}>
-                                p: {Array.isArray(id) ? (
-                                  <span>
-                                  {id.map((subId, nestedIndex) => (
-                                    <a key={nestedIndex} href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${subId}`} target = "_blank" rel="noreferrer">
-                                      {nestedIndex > 0 && ', '}
-                                      {subId}
-                                    </a>
-                                  ))}
-                                </span>
-                                ) : (
-                                  id
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No sources available</p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+      <div className='container'>
+        <div className="history-panel left">
+          <div className="history-scroll" ref={chatHistoryRef}>
+              <div className="container">
+                <h3>History</h3>
+                <button className="search-button" onClick={handleNewChat}>New chat</button>
+              </div>
+              {chatHistory.map((item, index) => (
+                <button className="history-button" key={index}  onClick={ () => handleChangeHistory(item)}>
+                  {item[0].query}
+                </button>
+              ))}
+            </div>
+        </div>
+        <div className="history-panel right">
+          <div className="history-scroll"  ref={chatHistoryRef}>
+            <ul>
+              {currentChatHistory.map((item, index) => (
+                <li key={index}>
+                  <p><strong>Query:</strong> {item.query}</p>
+                  <p><strong>Answer:</strong> {item.answer}</p>
+                    <div><strong>Sources:</strong> 
+                    {Object.entries(item.sources).length > 0 ? (
+                      <ul> 
+                        {Object.entries(item.sources).map(([source, ids], sourceIndex) => (
+                          <li key={sourceIndex}>
+                            <a href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${ids[0][0]}`} target = "_blank" rel="noreferrer"><strong>{source}:</strong></a>
+                            <ul>
+                              {ids.map((id, subIndex) => (
+                                <li key={subIndex}>
+                                  p: {Array.isArray(id) ? (
+                                    <span>
+                                    {id.map((subId, nestedIndex) => (
+                                      <a key={nestedIndex} href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${subId}`} target = "_blank" rel="noreferrer">
+                                        {nestedIndex > 0 && ', '}
+                                        {subId}
+                                      </a>
+                                    ))}
+                                  </span>
+                                  ) : (
+                                    id
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No sources available</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>)}
-      <div className="search">
+       <div className="search">
         <TextField
           id="outlined-basic"
           onChange={inputHandler}

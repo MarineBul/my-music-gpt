@@ -20,6 +20,10 @@ h2 {
   color: rgb(1, 1, 59);
 }
 
+h3{
+  margin-right: 80px;
+}
+
 .search {
   display: flex;
   align-items: center;
@@ -62,11 +66,19 @@ h2 {
   cursor: pointer;
   transition: background-color 0.3s;
   margin-left: 10px;
-  align-self: stretch;
+  align-self: flex-end;
 }
 
 .search-button:hover {
   background-color: #51a66b; /* Couleur de fond au survol (bleu plus sombre) */
+}
+
+.history-button{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+  max-width: 95%;
 }
 
 .history-panel {
@@ -81,6 +93,20 @@ h2 {
 }
 
 .history-scroll {
-  max-height: 500px; /* Hauteur maximale de la zone de défilement */
+  max-height: 400px; /* Hauteur maximale de la zone de défilement */
   overflow-y: auto; /* Activer le défilement vertical lorsque le contenu dépasse la hauteur maximale */
+}
+
+.container{
+  display:flex;
+}
+
+.left{
+  width: 20%;
+  margin-right: 10px;
+}
+
+.right{
+  width: 70%;
+  align-self: right;
 }

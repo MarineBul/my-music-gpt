@@ -7,18 +7,21 @@ import numpy as np
 import chromadb
 from openai.embeddings_utils import distances_from_embeddings
 
-openai.api_key = os.getenv("OpenAIKey")
+#openai.api_key = os.getenv("OpenAIKey35")
+openai.api_key = os.getenv("OpenAIKey35")
+#openai.api_base = "https://invuniandesai-2.openai.azure.com/"
 openai.api_base = "https://invuniandesai.openai.azure.com/"
 openai.api_type = 'azure'
 openai.api_version = '2023-05-15'
 
+#deployment_name='gpt-4-rfmanrique'
 deployment_name='gpt-35-turbo-rfmanrique'
 
 path = "C:/Users/Marine/Documents/CO_uniandes/0_Tesis/my-music-gpt/src"
 chroma_client = chromadb.PersistentClient(path)
 collection = chroma_client.get_collection("test_persist")
 
-def create_context(question, df, prev_questions, max_len=1800, size="ada"):
+def create_context(question, prev_questions, max_len=1800, size="ada"):
     
     # HyDE:
     
@@ -39,10 +42,11 @@ def create_context(question, df, prev_questions, max_len=1800, size="ada"):
     Create a context for a question by finding the most similar context from the dataframe
     """
     # Get the embeddings for the question
-    #q_embeddings = openai.Embedding.create(input=question, engine='text-embedding-ada-002-rfmanrique')['data'][0]['embedding']
-    q_embeddings = openai.Embedding.create(input=first_response['choices'][0]['message']['content'], engine='text-embedding-ada-002-rfmanrique')['data'][0]['embedding']
+    q_embeddings = openai.Embedding.create(input=question, engine='text-embedding-ada-002-rfmanrique')['data'][0]['embedding']
+    #q_embeddings = openai.Embedding.create(input=first_response['choices'][0]['message']['content'], engine='gpt4-embedding-ada-002')['data'][0]['embedding']
     # Get the distances from the embeddings
-    results = collection.query(query_embeddings=q_embeddings, n_results=10)
+    
+    results = collection.query(query_embeddings=q_embeddings, n_results=20)
 
     returns = []
     sources = []
@@ -61,7 +65,6 @@ def create_context(question, df, prev_questions, max_len=1800, size="ada"):
         # If the context is too long, break
         if cur_len > max_len:
             break
-        
         context_chunk = document
         response = openai.ChatCompletion.create(
             engine= deployment_name, 
@@ -80,9 +83,9 @@ def create_context(question, df, prev_questions, max_len=1800, size="ada"):
     # Return the context
     return (("\n\n###\n\n".join(returns)), sources)
 
-def generate_answer(question,df_embeddings, history, deployment=deployment_name):
+def generate_answer(question, history, deployment=deployment_name):
     prev_questions = get_previous_questions(history)
-    context, sources = create_context(question, df_embeddings, prev_questions, max_len=1800, size="ada")
+    context, sources = create_context(question, prev_questions, max_len=1800, size="ada")
     nb_tokens = 0
     for quest, ans in prev_questions:
         nb_tokens+=len(quest.split())+len(ans.split())
