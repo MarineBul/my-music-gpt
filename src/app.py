@@ -9,19 +9,6 @@ import atexit
 app = Flask(__name__)
 cors = CORS(app)
 
-#History = []
-
-# def load_history():
-#     global History
-#     file_path = "public/History.json"
-#     if os.path.exists(file_path):
-#         with open(file_path, "r") as f:
-#             History = json.load(f)
-#             print("history loaded")
-#     else:
-#         with io.open(os.path.join("public/", 'History.json'), 'w') as history_file:
-#             history_file.write(json.dumps([]))
-
 @app.route('/api/save', methods=['POST'])
 def save_history():
     try: 
@@ -43,13 +30,14 @@ def receive_question():
         data = request.get_json()
         question = data.get('query')
         history = data.get('history')
+        gpt4 = data.get('gpt4')
+        print(gpt4)
         if len(question)==0:
             question.append(" ") 
         print("question:", question)
         
         # Generation of the answer
-        print(history)
-        (answer, sources) =  generate_answer(question, history, deployment=deployment_name)
+        (answer, sources) =  generate_answer(question, history, gpt4, deployment=deployment_name)
         #print(sources)
         sources_to_print = {}
         for src in sources:

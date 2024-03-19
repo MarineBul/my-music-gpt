@@ -12,6 +12,7 @@ function App() {
   const [chatHistory, setChatHistory] = useState([[]])
   const [currentChatHistory, setCurrentChatHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [GPT4, setGPT4] = useState(false)
   const chatHistoryRef = useRef(null);
   
   const inputHandler = (e) => {
@@ -31,6 +32,7 @@ function App() {
     const jsonData = {
       query: query,
       history: currentChatHistory,
+      gpt4 : GPT4,
     };
   
     fetch('http://localhost:3001/api/query', {
@@ -47,7 +49,6 @@ function App() {
         console.log("answer", data.message.answer);
         console.log("sources array", data.message.sources);
         setAnswer(data.message.answer);
-        //setSources(JSON.parse(data.message.sources));
         // Update the current chat history so that it includes the answer to the new question
         setCurrentChatHistory(prevHistory => [
           ...prevHistory,
@@ -107,6 +108,11 @@ function App() {
     });
   };
 
+  const handleToggle = () => {
+    setGPT4(GPT4 === true? false : true);
+  };
+  console.log(GPT4)
+
   useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
@@ -138,8 +144,20 @@ function App() {
   // Front
   return (
     <div className="main">
-      <h1>Music GPT</h1>
-      <button className="search-button" onClick={handleSaveHistory}>Save history</button>
+      <div className="head">
+        <div className="head">GPT-3.5</div>
+        <label className="switch head">
+          <input
+            type="checkbox"
+            checked={GPT4 === true}
+            onChange={handleToggle}
+          />
+          <span className="slider"></span>
+        </label>
+        <div className="head">GPT-4</div>
+        <h1 className="head">Music GPT</h1>
+        <button className="search-button" onClick={handleSaveHistory}>Save history</button>
+      </div>
       {chatHistory && (
       <div className='container'>
         <div className="history-panel left">
@@ -167,14 +185,14 @@ function App() {
                       <ul> 
                         {Object.entries(item.sources).map(([source, ids], sourceIndex) => (
                           <li key={sourceIndex}>
-                            <a href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${ids[0][0]}`} target = "_blank" rel="noreferrer"><strong>{source}:</strong></a>
+                            <a href={require(`../documents/${source}.pdf`)+`#page=${ids[0][0]}`} target = "_blank" rel="noreferrer"><strong>{source}:</strong></a>
                             <ul>
                               {ids.map((id, subIndex) => (
                                 <li key={subIndex}>
                                   p: {Array.isArray(id) ? (
                                     <span>
                                     {id.map((subId, nestedIndex) => (
-                                      <a key={nestedIndex} href={require(`../../MT_papers/all/${source}.pdf`)+`#page=${subId}`} target = "_blank" rel="noreferrer">
+                                      <a key={nestedIndex} href={require(`../documents/${source}.pdf`)+`#page=${subId}`} target = "_blank" rel="noreferrer">
                                         {nestedIndex > 0 && ', '}
                                         {subId}
                                       </a>
