@@ -95,6 +95,8 @@ def generate_answer(question, history, gpt4, deployment=deployment_name):
     global deployment_name
     prev_questions = get_previous_questions(history)
     context, sources = create_context(question, prev_questions, gpt4, max_len=1800, size="ada")
+    print("context ", context)
+    print("sources", sources)
     nb_tokens = 0
     for quest, ans in prev_questions:
         nb_tokens+=len(quest.split())+len(ans.split())
@@ -105,7 +107,25 @@ def generate_answer(question, history, gpt4, deployment=deployment_name):
             engine= deployment_name, 
             messages=[
                 {"role": "system", "content": "You are an amazing music therapist."},
-                {"role": "user", "content": f"Answer the question based on the context below and on the previous questions and the answers that have already been given. Give more importance to the previous question. If the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nPrevious questions and their answers: {prev_questions}\n\nQuestion: {question}\nAnswer:"},
+                {"role": "user", "content": f"""```  {context}  ```
+                    Question ---  {question}  ---  
+                    From the support information that you are provided, delimited by triple backticks, extract the \
+                    relevant information \
+                    based on the asked question delimited by triple hyphens. If there are any measurements or doses \
+                    mentioned in the question, try to locate them in the provided information. 
+                    Then, using these relevant details and any measurements or dosis you extracted, continue the previous \
+                    conversation by answering the question.
+                    Provide a detailed answer, offering further explanations and elaborating on the information. 
+                    The answer mustn’t include special characters such as /, ", ---, ``` etc. 
+                    If the question cannot be answered with the provided information, simply write "I don't know.".
+                    Once you thought about your answer, revise it following these steps:
+                    1. Verify your answer and remove any references to the provided information. For instance, \
+                    if your answer states:  "Based on the information provided, it seems that ...", replace it with \
+                    "It seems that ". Refer to these information as your own knowledge as a musical therapy chatbot. \
+                    Your response mustn't mention the words "provided information" or "given information" under any circumstances.
+                    2. If if the context delimited by triple backticks is empty or if your answer implies that you cannot \
+                    respond based on the given information, simply state "I don't know.".
+                    3. Remove from your answer any advice reminding him to consult with a healthcare professional."""},
             ]
         )
         #print(response)

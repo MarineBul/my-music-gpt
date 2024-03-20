@@ -41,7 +41,7 @@ def receive_question():
         #print(sources)
         sources_to_print = {}
         for src in sources:
-            #print(src)
+            print(src)
             if src[0] in sources_to_print:
                 sources_to_print[src[0]].append(src[1]+1)
             else:
