@@ -35,7 +35,8 @@ function App() {
       gpt4 : GPT4,
     };
   
-    fetch('http://localhost:3001/api/query', {
+    //https://musicgpt.azurewebsites.net/
+    fetch('/api/query', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
