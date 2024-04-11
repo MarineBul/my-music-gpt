@@ -7,8 +7,6 @@ import "./app.py";
 function App() {
 
   const [query, setQuery] = useState([])
-  const [answer, setAnswer] = useState("")
-  const [sources, setSources] = useState([])
   const [chatHistory, setChatHistory] = useState([[]])
   const [currentChatHistory, setCurrentChatHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -49,7 +47,6 @@ function App() {
         console.log("message", data.message);
         console.log("answer", data.message.answer);
         console.log("sources array", data.message.sources);
-        setAnswer(data.message.answer);
         // Update the current chat history so that it includes the answer to the new question
         setCurrentChatHistory(prevHistory => [
           ...prevHistory,
@@ -93,7 +90,7 @@ function App() {
     const jsonData = {
       history: chatHistory,
     };
-    fetch('http://localhost:3001/api/save', {
+    fetch('/api/save', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
