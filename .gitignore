@@ -10,6 +10,8 @@
 
 # production
 /build
+Front_React/build
+Front_React/node_modules
 
 # misc
 .DS_Store
@@ -17,7 +19,12 @@
 .env.development.local
 .env.test.local
 .env.production.local
+venv
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.idea
+.vscode
+my-music-gpt.iml
