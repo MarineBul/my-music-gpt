@@ -5,7 +5,7 @@ WORKDIR /my-music-gpt
 COPY ./init_db.py .
 COPY ./embeddings_complete.csv .
 COPY ./requirements.txt .
-COPY ./react_build .
+COPY ./react_build/* ./react_build/
 COPY ./app.py .
 COPY ./back.py .
 

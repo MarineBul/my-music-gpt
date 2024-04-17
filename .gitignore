@@ -13,6 +13,8 @@
 Front_React/build
 Front_React/node_modules
 
+Back_Python/react_build
+
 # misc
 .DS_Store
 .env.local
