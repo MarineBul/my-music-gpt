@@ -1,0 +1,183 @@
+.main {
+  display: flex;
+  margin: 20px;
+  height: 100vh;
+  width: 90%;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 20px;
+  align-self: flex-start;
+}
+
+.head{
+  display: inline-block;
+  margin-right: 25px;
+}
+
+h1 {
+  margin: 10px;
+  font-size: 40px;
+  color: rgb(1, 1, 59);
+}
+
+h2 {
+  font-size: 25px;
+  color: rgb(1, 1, 59);
+}
+
+h3{
+  margin-right: 80px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  width: 70%;
+  justify-content: space-between;
+}
+
+.search input {
+  flex-grow: 1; /* Faire en sorte que le champ de recherche occupe tout l'espace disponible */
+}
+
+.answer-container{
+  width: 80%
+}
+
+.answer-text {
+  margin: 20px;
+  font-size: 18px;
+  color: #333; /* Couleur du texte */
+  background-color: #f0f0f0; 
+  padding: 10px; /* Espacement intérieur */
+  border: 1px solid #ccc; 
+  border-radius: 5px; /* Coins arrondis */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  margin-top: 20px; 
+  max-width: 90%; 
+}
+
+.search-button {
+  background-color: #156752;; /* Green */
+  margin-top: 20px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+  align-self: flex-end;
+}
+
+.search-button:hover {
+  background-color: #51a66b; /* Couleur de fond au survol (bleu plus sombre) */
+}
+
+.history-button{
+  font-size: 16px;
+  border: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+  max-width: 95%;
+}
+
+.history-button:hover{
+  background-color: #d8d8d8;
+}
+
+.history-panel {
+  margin-bottom: 20px; /* Marge en bas pour séparer l'historique de la barre de recherche */
+  color: #333; /* Couleur du texte */
+  background-color: #f0f0f0; /* Couleur de fond */
+  padding: 10px; /* Espacement intérieur */
+  border: 1px solid #ccc; /* Bordure */
+  border-radius: 5px; /* Coins arrondis */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  flex-grow: 0.8; 
+}
+
+.history-scroll {
+  max-height: 400px; /* Hauteur maximale de la zone de défilement */
+  overflow-y: auto; /* Activer le défilement vertical lorsque le contenu dépasse la hauteur maximale */
+}
+
+.container{
+  display:flex;
+}
+
+.left{
+  width: 20%;
+  margin-right: 10px;
+}
+
+.right{
+  width: 70%;
+  align-self: right;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
