@@ -9,8 +9,8 @@ COPY ./react_build/ ./react_build/
 COPY ./app.py .
 COPY ./back.py .
 
-RUN pip install -r requirements.txt && \
-    python init_db.py
+RUN pip install -r requirements.txt
+RUN python init_db.py
 
 EXPOSE 5000
 

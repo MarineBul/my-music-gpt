@@ -2,7 +2,7 @@ import chromadb
 import pandas as pd
 import numpy as np
 
-df_complete = pd.read_csv("Back_Python/embeddings_complete.csv")
+df_complete = pd.read_csv("embeddings_complete.csv")
 df_complete = df_complete.drop(['Unnamed: 0'], axis=1)
 
 path = "chroma-db/"
