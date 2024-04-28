@@ -1,14 +1,18 @@
 import { React, useState, useRef, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import "./App.css";
+import authConf from "./authConf.json";
 
 
 function App() {
 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [query, setQuery] = useState([])
   const [chatHistory, setChatHistory] = useState([[]])
   const [currentChatHistory, setCurrentChatHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [connected, setConnected] = useState(false)
   const [GPT4, setGPT4] = useState(false)
   const chatHistoryRef = useRef(null);
   
@@ -32,8 +36,7 @@ function App() {
       gpt4 : GPT4,
     };
   
-    //https://musicgpt.azurewebsites.net/
-    fetch('/api/query', {
+    fetch('api/query', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
@@ -74,6 +77,15 @@ function App() {
       console.log("chat history", chatHistory);
   };
 
+  const handleLogin = () =>{
+    if (username==authConf.username && password==authConf.password){
+      setConnected(true)
+    }
+    else{
+      console.log("Sorry, try again")
+    }
+  }
+
 
   const handleChangeHistory = (item) =>{
     console.log("the new current history", item)
@@ -89,7 +101,7 @@ function App() {
     const jsonData = {
       history: chatHistory,
     };
-    fetch('/api/save', {
+    fetch('api/save', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +131,7 @@ function App() {
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const response = await fetch('../public/History.json');
+        const response = await fetch('./History.json');
         const data = await response.json();
         setChatHistory(data);
         setCurrentChatHistory(data[data.length - 1])
@@ -135,8 +147,16 @@ function App() {
   }, []);   
   console.log("chatHistory", chatHistory);
 
+  if (!connected){
+    return(<div className="container-form"> <form>
+      <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username"/>
+      <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password"/>
+      <button className="search-button" onClick={handleLogin}>Login</button>
+  </form></div>);
+  }
+
   if (loading){
-    return <div>Loading...</div>
+    return <div>Loading... </div>
   }
   // Front
   return (
@@ -164,7 +184,8 @@ function App() {
                 <button className="search-button" onClick={handleNewChat}>New chat</button>
               </div>
               {chatHistory.map((item, index) => (
-                <button className="history-button" key={index}  onClick={ () => handleChangeHistory(item)}>
+                <button className={`history-button ${item === currentChatHistory ? 'selected-history-button' : ''}`}
+                 key={index}  onClick={ () => handleChangeHistory(item)}>
                   {item[0].query}
                 </button>
               ))}
@@ -175,8 +196,8 @@ function App() {
             <ul>
               {currentChatHistory.map((item, index) => (
                 <li key={index}>
-                  <p><strong>Query:</strong> {item.query}</p>
-                  <p><strong>Answer:</strong> {item.answer}</p>
+                  <p className="text-bubble"><strong>Query:</strong> {item.query}</p>
+                  <p className="text-bubble received"><strong>Answer:</strong> {item.answer}</p>
                     <div><strong>Sources:</strong> 
                     {Object.entries(item.sources).length > 0 ? (
                       <ul> 
@@ -205,7 +226,7 @@ function App() {
                         ))}
                       </ul>
                     ) : (
-                      <p>No sources available</p>
+                      <p className="text-bubble received">No sources available</p>
                     )}
                   </div>
                 </li>

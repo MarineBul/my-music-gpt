@@ -5,8 +5,12 @@
 /.pnp
 .pnp.js
 __pycache__ 
+
 # testing
 /coverage
+
+# Authentication
+Front_React/src/authConf.json
 
 # production
 /build
@@ -15,6 +19,7 @@ Front_React/node_modules
 
 Back_Python/react_build
 Back_Python/chroma-db
+
 # misc
 .DS_Store
 .env.local
