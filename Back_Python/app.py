@@ -7,13 +7,15 @@ from back import *
 app = Flask(__name__, static_folder='react_build')
 cors = CORS(app)
 
+history_path = "react_build/"
+
 @app.route('/api/save', methods=['POST'])
 def save_history():
     try:
         History = request.get_json().get('history')
         if (History != [[]]):
             print("\nSaving history to file...")
-            with open("Front_React/public/History.json", "w") as f:
+            with open(history_path+"History.json", "w") as f:
                 json.dump(History, f)
             print("History saved successfully.")
         return jsonify({'message': 'succesfully saved'})
