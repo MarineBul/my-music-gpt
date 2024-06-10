@@ -43,7 +43,7 @@ def create_context(question, prev_questions, gpt4, max_len=1800, size="ada"):
                 {"role": "user", "content": f"Rephrase the question to correct the grammatical errors and then answer the question taking into account the previously-asked questions, which are delimitated by three apostrophes. In your answer, you must include the previous question and the answer./\n\n---\n\nPrevious questions and their answers: '''{prev_questions}'''\n\nQuestion: {question}\nAnswer after the colon, with the rephrased question and the answer, without printing a distinct separation between the rephrased question and the answer:"},
             ]          
         )
-    print("-------------- FIRST RESPONSE --------------\n", first_response['choices'][0]['message']['content'], "\n\n")
+    #print("-------------- FIRST RESPONSE --------------\n", first_response['choices'][0]['message']['content'], "\n\n")
 
     """
     Create a context for a question by finding the most similar context from the dataframe
@@ -72,7 +72,7 @@ def create_context(question, prev_questions, gpt4, max_len=1800, size="ada"):
         if cur_len > max_len:
             break
         context_chunk = document
-        time.sleep(5)
+        time.sleep(0.1)
         response = openai.ChatCompletion.create(
             engine= deployment_name, 
             messages=[
@@ -94,7 +94,7 @@ def generate_answer(question, history, gpt4, deployment=deployment_name):
     global deployment_name
     prev_questions = get_previous_questions(history)
     context, sources = create_context(question, prev_questions, gpt4, max_len=1800, size="ada")
-    #print("context ", context)
+    print("\n\n\ncontext ", context, len(context))
     #print("sources", sources)
     nb_tokens = 0
     for quest, ans in prev_questions:
@@ -102,31 +102,34 @@ def generate_answer(question, history, gpt4, deployment=deployment_name):
     if nb_tokens<2000:
         if gpt4==True:
             deployment_name='gpt-4-rfmanrique'
-        response = openai.ChatCompletion.create(
-            engine= deployment_name, 
-            messages=[
-                {"role": "system", "content": "You are an amazing music therapist."},
-                {"role": "user", "content": f"""```  {context}  ```
-                    Question ---  {question}  ---  
-                    From the support information that you are provided, delimited by triple backticks, extract the \
-                    relevant information \
-                    based on the asked question delimited by triple hyphens. If there are any measurements or doses \
-                    mentioned in the question, try to locate them in the provided information. 
-                    Then, using these relevant details and any measurements or dosis you extracted, continue the previous \
-                    conversation by answering the question.
-                    Provide a detailed answer, offering further explanations and elaborating on the information. 
-                    The answer mustn’t include special characters such as /, ", ---, ``` etc. 
-                    If the question cannot be answered with the provided information, simply write "I don't know.".
-                    Once you thought about your answer, revise it following these steps:
-                    1. Verify your answer and remove any references to the provided information. For instance, \
-                    if your answer states:  "Based on the information provided, it seems that ...", replace it with \
-                    "It seems that ". Refer to these information as your own knowledge as a musical therapy chatbot. \
-                    Your response mustn't mention the words "provided information" or "given information" under any circumstances.
-                    2. If if the context delimited by triple backticks is empty or if your answer implies that you cannot \
-                    respond based on the given information, simply state "I don't know.".
-                    3. Remove from your answer any advice reminding him to consult with a healthcare professional."""},
-            ]
-        )
+        if len(context)==0:
+            response="I don't know"
+            return (response, sources)
+        else:
+            response = openai.ChatCompletion.create(
+                engine= deployment_name, 
+                messages=[
+                    {"role": "system", "content": "You are a music therapist."},
+                    {"role": "user", "content": f"""```  {context}  ```
+                        Question ---  {question}  ---  
+                        From the support information that you are provided, delimited by triple backticks, extract the
+                        relevant information based on the asked question delimited by triple hyphens. If there are any measurements or doses \
+                        mentioned in the question, try to locate them in the provided information. 
+                        Then, using these relevant details and any measurements or doses you extracted, continue the previous \
+                        conversation by answering the question.
+                        Provide a detailed answer, offering further explanations and elaborating on the information. 
+                        The answer mustn’t include special characters such as /, ", ---, ``` etc. 
+                        If the question cannot be answered with the provided information, only write "I don't know.".
+                        Once you thought about your answer, revise it following these steps:
+                        1. Verify your answer and remove any references to the provided information. For instance, \
+                        if your answer states:  "Based on the information provided, it seems that ...", replace it with \
+                        "It seems that ". Refer to these information as your own knowledge as a musical therapy chatbot. \
+                        Your response mustn't mention the words "provided information" or "given information" under any circumstances.
+                        2. If if the context delimited by triple backticks is empty or if your answer implies that you cannot \
+                        respond based on the given information, state "I don't know.".
+                        3. Remove from your answer any advice reminding him to consult with a healthcare professional."""},
+                ]
+            )
         #print(response)
         return ((response['choices'][0]['message']['content']),sources)
     else:

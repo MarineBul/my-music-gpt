@@ -31,7 +31,7 @@ def receive_question():
         question = data.get('query')
         history = data.get('history')
         gpt4 = data.get('gpt4')
-        print(gpt4)
+        #print(gpt4)
         if len(question) == 0:
             question.append(" ") 
         print("question:", question)
@@ -41,7 +41,7 @@ def receive_question():
         # print(sources)
         sources_to_print = {}
         for src in sources:
-            print(src)
+            #print(src)
             if src[0] in sources_to_print:
                 sources_to_print[src[0]].append(src[1]+1)
             else:

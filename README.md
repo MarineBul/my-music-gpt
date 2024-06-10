@@ -1,52 +1,47 @@
 # Music therapy chatbot
 
-Marine Buliard - 202326681 - Last updated 4/12/2023
+Marine Buliard - 202326681 - Last updated 10/06/2023
 
 ## Description
 
-This project is a chatbot specialized in music therapy for newborn babies, developped as part of a master thesis at Los Andes university, Columbia.
+This project is a chatbot specialized in music therapy for newborn babies, developped as part of a MISIS (Master's degree in Systems and Computation Engineering) thesis at Los Andes university, Columbia. The aim is to develop a medical chatbot able to provide accurate answers about music therapy using all papers on the matter up to 2022 (applyign the RAG framework). The answers are based on OpenAI's GPT-3.5 and GPT-4.
+
+Assessor: Prof. Ruben Francisco Manrique
 
 ## How to use it?
 
-### Install
+### Install the libraries
 
-To launch the project, ensure you have Node.js and Python installed on your computer.
-You will also need the Flask python module, openai (version 0.28.1), pandas, matplotlib, plotly, scipy, sklearn and the mui material library.
-Finally, you will need to have **your OpenAI key set as an environement variable** named OpenAIKey.
+To launch the project, ensure you have all required libraries. If this is not the case or you are unsure, please go to the Back_Python folder and run
 
-* To install the Flask module run:
-pip install Flask
+pip intall -r requirements.txt
 
-* To install the openai library run:
-pip install openai==0.28.1
-Please note that if you install a lastest version, the code might not work since we are using a now deleted library
+### Create the database
 
-* To install the pandas library run:
-pip install pandas
+The database can be initialized by running the following in the Back_Python folder:
 
-* To install the matplotlib library run:
-pip install matplotlib
+python init_db.py
 
-* To install the plotly library run:
-pip install plotly
-
-* To install the scipy library run:
-pip install scipy
-
-* To install the sklearn library run:
-pip install sklearn
-
-* To install the mui material library run:
-npm install @mui/material
+This will instantiate a local database and fill it with the content of embeddings_complete.csv (this includes chunks of text, associated embeddings, title and page of the papers it is from and numbers of tokens)
 
 ### Launch the project
 
-To launch the frontend, open a powershell terminal in the APP/front folder, and run the following command:
-    npm start
-A new window will be opened automatically in your default browser
+To be able to use the project, you must first create an environment variable called OpenAIKey35 and/or OpenAIKey4 (according to your needs) and enter your OpenAI key. You can also enter the key directly in the back.py file that can be encountered in the Back_Python folder.
 
-To launch the backend, open a python terminal in the src folder and run:
-    python3 app.py
+To launch the application, open a powershell terminal in the Back_Python, and run the following command:
+
+    python app.py
+
+Go on your navigator on: http://127.0.0.1:3001
+
+You'll be asked for a username and a password first. They can be modified in the Front_React/src folder. To do so, you must create a authConf.json file following the following format:
+
+{
+  "username": "your_new_username",
+  "password": "your_new_password"
+}
+
+Then, use npm run build in the Front_React folder and move the content of the build folder into Back_Python/react_build
 
 ### Use the project
 

@@ -245,16 +245,12 @@ function App() {
   return (
     <div className="main">
       <div className="head">
-        <div className="head">GPT-3.5</div>
-        <label className="switch head">
-          <input
-            type="checkbox"
-            checked={GPT4 === true}
-            onChange={handleToggle}
-          />
-          <span className="slider"></span>
-        </label>
-        <div className="head">GPT-4</div>
+        <button
+          className="search-button"
+          onClick={handleToggle}
+        >
+          {GPT4 === true? "Using GPT-4, use GPT-3.5 instead" : "Using GPT-3.5, use GPT-4 instead"}
+        </button>
         <h1 className="head">Music GPT</h1>
         <button className="search-button" onClick={handleSaveHistory}>Save history</button>
       </div>
